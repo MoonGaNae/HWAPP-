@@ -33,28 +33,45 @@ export default class KitInfo extends react.Component {
     if (chapterStep < 2) {
       this.storageChapterStep();
     }
+    console.log("render() 재호출입니다.");
   }
 
   render() {
     const {videoURL} = this.state;
-    return (
-      <View style={styles.container}>
+    console.log("같은건가요? ");
+    console.log(videoURL === 'gmYN52qrWDM');
+
+    if(videoURL != ""){
+      return (
+        <View style={styles.container}>
+          <View style={styles.contentView}>
+            <YouTube
+              videoId={this.state.videoURL} // The YouTube video ID
+              //videoId="gmYN52qrWDM"
+              apiKey="AIzaSyCMp3L34PA7YW7i1f2v04GFReQq4NkEgmI"
+              play={true} // control playback of video with true/false
+              fullscreen={false} // control whether the video should play in fullscreen or inline
+              loop={false} // control whether the video should loop when ended
+              onReady={(e) => this.setState({isReady: true})}
+              onChangeState={(e) => this.setState({status: e.state})}
+              onChangeQuality={(e) => this.setState({quality: e.quality})}
+              onError={(e) => this.setState({error: e.error})}
+              style={styles.videoStyle}
+            />
+          </View>
+          <View style={styles.footerView} />
+        </View>
+      );
+    }
+    else{
+      return (<View style={styles.container}>
         <View style={styles.contentView}>
-          <YouTube
-            videoId={videoURL} // The YouTube video ID
-            play // control playback of video with true/false
-            fullscreen // control whether the video should play in fullscreen or inline
-            loop // control whether the video should loop when ended
-            onReady={(e) => this.setState({isReady: true})}
-            onChangeState={(e) => this.setState({status: e.state})}
-            onChangeQuality={(e) => this.setState({quality: e.quality})}
-            onError={(e) => this.setState({error: e.error})}
-            style={styles.videoStyle}
-          />
         </View>
         <View style={styles.footerView} />
       </View>
-    );
+      );
+    }
+    
   }
 }
 
