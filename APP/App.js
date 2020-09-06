@@ -109,7 +109,7 @@ class HomeScreen extends Component {
           <View style={styles.headerView} />
           <View style={styles.titleView}>
             <Image style={styles.logo} source={require('./assets/logo.png')} />
-            <Button title="delete" onPress={() => this.deleteInfo()} />
+            {/* <Button title="delete" onPress={() => this.deleteInfo()} /> */}
           </View>
           <View style={styles.contentView}>
             <View style={styles.registerView}>
