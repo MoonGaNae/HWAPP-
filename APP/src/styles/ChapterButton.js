@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     margin: '4%',
   },
   title: {
-    fontSize: 25,
+    fontSize: 20,
     color: '#FFF',
     //fontFamily: 'NanumSquareRoundB',
   },
