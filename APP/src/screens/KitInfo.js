@@ -37,6 +37,13 @@ class KitInfo extends Component {
       console.log('storage: ' + storageChapterStep);
       this.setState({chapterStep: storageChapterStep});
     }
+
+    const storageIsRegisterAnswer = await AsyncStorage.getItem(
+      'isRegisterAnswer' + kitCode,
+    );
+    if (storageIsRegisterAnswer === null) {
+      AsyncStorage.setItem('isRegisterAnswer' + kitCode, '0');
+    }
   };
 
   componentDidMount() {

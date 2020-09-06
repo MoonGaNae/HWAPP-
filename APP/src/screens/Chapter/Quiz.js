@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, StyleSheet, Text, TextInput, Button} from 'react-native';
+import {View, StyleSheet, Text, TextInput, AsyncStorage, Alert} from 'react-native';
 import {Pages} from 'react-native-pages';
 import axios from 'axios';
 import FucntionButton from '../../styles/functionButton';
@@ -12,6 +12,7 @@ export default class KitInfo extends Component {
   state = {
     quiz: [],
     answers: [],
+    isRegisterAnswer: '',
   }
 
   loadQuiz = async() => {
@@ -20,14 +21,44 @@ export default class KitInfo extends Component {
     .then((response) => this.setState({quiz: response.data}));
   };
 
+  registerAlert = () => {
+    Alert.alert(
+      '답변을 등록하실건가요?',
+      '한 번 등록하시면 다시 작성하실 수 없습니다',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+        },
+        {
+          text: 'OK', 
+          onPress: () => this.registerAnswer()
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
   registerAnswer = async() => {
+    const kitCode = this.props.navigation.state.params.kitCode;
     for (var i = 0; i < this.state.answers.length; i++) {
-      await axios.post('https://hwapp-2020.herokuapp.com/kit/egistQuizAnswer', {
+      await axios.post('https://hwapp-2020.herokuapp.com/kit/registQuizAnswer', {
         userId: 'bang',
         quizIdx: this.state.answers[i].quizIdx,
         answer: this.state.answers[i].answer,
-      })
+      }).then(() => console.log('register'));
     }
+    await AsyncStorage.setItem('isRegisterAnswer' + kitCode, '1');
+    this.props.navigation.goBack();
+  };
+
+  getStorageIsRegisterAnswer = async() => {
+    const kitCode = this.props.navigation.state.params.kitCode;
+    const storageIsRegisterAnswer = await AsyncStorage.getItem(
+      'isRegisterAnswer' + kitCode,
+    );
+    this.setState({isRegisterAnswer: storageIsRegisterAnswer});
+    console.log(storageIsRegisterAnswer);
   };
 
   componentDidMount = async() => {
@@ -36,6 +67,22 @@ export default class KitInfo extends Component {
       this.state.answers[i] = {'quizIdx': this.state.quiz[i].quizIdx, 'answer': ''}
     }
     console.log(this.state.answers);
+    this.getStorageIsRegisterAnswer();
+  };
+
+  renderRegisterButton = () => {
+    if (this.state.isRegisterAnswer === '0') {
+      return (
+        <FucntionButton
+          buttonColor={'#3AE5D1'}
+          title={'답변 등록하기'}
+          disabled={false}
+          onPress={() => this.registerAlert()}
+        />
+      );
+    } else {
+      return <FucntionButton buttonColor={'#DBDBDB'} title={'답변 등록하기'} />;
+    }
   };
 
   render() {
@@ -50,13 +97,8 @@ export default class KitInfo extends Component {
             <View style={styles.contentView}>
               <Text style={styles.quizTitle}>{i+1}. {quiz[i].question}</Text>
               <View style={styles.contentView}></View>
-              <View style={{marginBottom: '1%', alignItems: 'flex-end'}}>
-                <FucntionButton
-                  style={{width: '50%'}}
-                  buttonColor={'#3AE5D1'}
-                  title={'답변 등록하기'}
-                  onPress={() => console.log(this.state.answers)}
-                />
+              <View style={{margin: '2%', alignItems: 'flex-end'}}>
+                <this.renderRegisterButton />
               </View>
               <View style={styles.answerSheetView}>
                 <TextInput
